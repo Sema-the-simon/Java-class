@@ -3,15 +3,28 @@ package javaclass;
 import java.util.*;
 
 public final class Preiskurant {
-    private final List<Pair<Product, Price>> pricelist = new ArrayList<>();
+    private final List<Pair<Product, Price>> priceList = new ArrayList<>();
 
-    private static final class Price {
+    @SafeVarargs
+    public Preiskurant(Pair<Product,Price>... pairs) {
+        if (pairs != null){
+            for (Pair<Product, Price> pair: pairs) {
+                this.addProductAndPrice(pair);
+            }
+        }
+    }
+
+    public List<Pair<Product, Price>> getPriceList(){
+        return priceList;
+    }
+
+    public static final class Price {
         private final int rub;
         private final int kop;
 
         public Price(int kop) {
             rub = kop / 100;
-            this.kop = kop;
+            this.kop = kop % 100;
         }
 
         public int getRub() {
@@ -87,20 +100,25 @@ public final class Preiskurant {
         }
     }
 
-    public Pair<Product, Price> createPair(Product product, Price price) {
+    public static Pair<Product, Price> createPair(Product product, Price price) {
         return new Pair<>(product, price);
     }
 
+    public Boolean addProductAndPrice(Pair<Product, Price> pair) {
+        if (pair == null) return false;
+        priceList.add(pair);
+        return true;
+    }
     public Boolean addProductAndPrice(Product product, Price price) {
         if (product == null) return false;
-        pricelist.add(createPair(product, price));
+        priceList.add(createPair(product, price));
         return true;
     }
 
     public boolean priceChange(Product product, Price newprice) {
         if (!containsProduct(product)) return false;
-        for (Pair<Product, Price> pair : pricelist) {
-            if (pair.getKey() == product) {
+        for (Pair<Product, Price> pair : priceList) {
+            if (pair.getKey().equals(product)) {
                 pair.setValue(newprice);
             }
         }
@@ -109,7 +127,7 @@ public final class Preiskurant {
 
     public boolean priceChange(int code, Price newprice) {
         if (!containsProduct(code)) return false;
-        for (Pair<Product, Price> pair : pricelist) {
+        for (Pair<Product, Price> pair : priceList) {
             if (pair.getKey().getCode() == code) {
                 pair.setValue(newprice);
             }
@@ -119,8 +137,17 @@ public final class Preiskurant {
 
     public boolean nameChange(Product product, String newname) {
         if (!containsProduct(product)) return false;
-        for (Pair<Product, Price> pair : pricelist) {
-            if (pair.getKey() == product) {
+        for (Pair<Product, Price> pair : priceList) {
+            if (pair.getKey().equals(product)) {
+                pair.getKey().setName(newname);
+            }
+        }
+        return true;
+    }
+    public boolean nameChange(int code, String newname) {
+        if (!containsProduct(code)) return false;
+        for (Pair<Product, Price> pair : priceList) {
+            if (pair.getKey().getCode() == code) {
                 pair.getKey().setName(newname);
             }
         }
@@ -129,9 +156,9 @@ public final class Preiskurant {
 
     public boolean delete(Product product) {
         if (!containsProduct(product)) return false;
-        for (Pair<Product, Price> pair : pricelist) {
-            if (pair.getKey() == product) {
-                pricelist.remove(pair);
+        for (Pair<Product, Price> pair : priceList) {
+            if (pair.getKey().equals(product)) {
+                priceList.remove(pair);
                 break;
             }
         }
@@ -140,15 +167,15 @@ public final class Preiskurant {
 
     public boolean deleteAll(Product product) {
         if (!containsProduct(product)) return false;
-        pricelist.removeIf(pair -> pair.getKey() == product);
+        priceList.removeIf(pair -> pair.getKey().equals(product));
         return true;
     }
 
     public boolean delete(int code) {
         if (!containsProduct(code)) return false;
-        for (Pair<Product, Price> pair : pricelist) {
+        for (Pair<Product, Price> pair : priceList) {
             if (pair.getKey().getCode() == code) {
-                pricelist.remove(pair);
+                priceList.remove(pair);
                 break;
             }
         }
@@ -157,14 +184,14 @@ public final class Preiskurant {
 
     public boolean deleteAll(int code) {
         if (!containsProduct(code)) return false;
-        pricelist.removeIf(pair -> pair.getKey().getCode() == code);
+        priceList.removeIf(pair -> pair.getKey().getCode() == code);
         return true;
     }
 
     public String purchasePrice(int code) {
         int kop = 0;
-        if (!containsProduct(code)) throw  new IllegalArgumentException("This preiskurant does not contain Product:" + code);
-        for (Pair<Product, Price> pair : pricelist) {
+        if (!containsProduct(code)) return null;
+        for (Pair<Product, Price> pair : priceList) {
             if (pair.getKey().getCode() == code) {
                 kop += pair.getValue().getRub() * 100 ;
                 kop += pair.getValue().getKop() ;
@@ -174,16 +201,39 @@ public final class Preiskurant {
     }
 
     public boolean containsProduct(Product product) {
-        for (Pair<Product, Price> pair : pricelist) {
-            if (pair.getKey() == product) return true;
+        for (Pair<Product, Price> pair : priceList) {
+            if (pair.getKey().equals(product)) return true;
         }
         return false;
     }
 
     public boolean containsProduct(int code) {
-        for (Pair<Product, Price> pair : pricelist) {
+        for (Pair<Product, Price> pair : priceList) {
             if (pair.getKey().getCode() == code) return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Preiskurant)) return false;
+        Preiskurant that = (Preiskurant) o;
+        return this.getPriceList().equals(that.getPriceList());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getPriceList());
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder SB = new StringBuilder("Preiskurant{");
+        for (Pair<Product, Price> pair:this.getPriceList()) {
+            SB.append(pair);
+            SB.append("; ");
+        }
+        return SB.append("}").toString();
     }
 }
