@@ -9,7 +9,7 @@ class ProductTest {
         Product test = new Product("Филе куринное", 35309);
         assertEquals("Филе куринное", test.getName());
         assertEquals(35309, test.getCode());
-
+        assertThrows(IllegalArgumentException.class, () -> new Product("IllegalProduct", -15));
     }
 
     @Test
@@ -21,20 +21,20 @@ class ProductTest {
 
     @Test
     void testEquals() {
-        Product a = new Product("Печеьне", 1);;
-        Product b = new Product("Печеьне", 1);;
+        Product a = new Product("Печеьне", 1);
+        Product b = new Product("Печеьне", 1);
         assertEquals(b, a);
         assertEquals(a, b);
-        Product examle1 = new Product("Филе куринное", 35409);
-        Product exaple2 = new Product("Филе куринное", 35309);
-        assertNotEquals(exaple2, examle1);
+        Product example1 = new Product("Филе куринное", 35409);
+        Product example2 = new Product("Филе куринное", 35309);
+        assertNotEquals(example2, example1);
     }
 
     @Test
     void testHashCode() {
-        Product examle1 = new Product("Филе куринное", 35309);
-        Product exaple2 = new Product("Филе куринное", 35309);
-        assertEquals(exaple2.hashCode(), examle1.hashCode());
+        Product example1 = new Product("Филе куринное", 35309);
+        Product example2 = new Product("Филе куринное", 35309);
+        assertEquals(example2.hashCode(), example1.hashCode());
     }
 
     @Test

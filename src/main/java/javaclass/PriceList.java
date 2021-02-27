@@ -16,13 +16,13 @@ public final class PriceList {
         return priceList;
     }
 
-    public Product getProduct(int code) {
+    public Optional<Product> getProduct(int code) {
         for (Product product : priceList.keySet()) {
             if (product.getCode() == code) {
-                return product;
+                return Optional.of(product);
             }
         }
-        return null;
+        return Optional.empty();
     }
 
     public Boolean add(Product product, Price price) {
@@ -38,9 +38,9 @@ public final class PriceList {
     }
 
     public boolean priceChange(int code, Price newPrice) {
-        Product product = this.getProduct(code);
-        if (product == null) return false;
-        priceChange(product, newPrice);
+        Optional<Product> product = this.getProduct(code);
+        if (product.isEmpty()) return false;
+        priceChange(product.get(), newPrice);
         return true;
     }
 
@@ -54,9 +54,9 @@ public final class PriceList {
     }
 
     public boolean nameChange(int code, String newName) {
-        Product product = this.getProduct(code);
-        if (product == null) return false;
-        nameChange(product, newName);
+        Optional<Product> product = this.getProduct(code);
+        if (product.isEmpty()) return false;
+        nameChange(product.get(), newName);
         return false;
     }
 
@@ -75,19 +75,19 @@ public final class PriceList {
     }
 
     public boolean delete(int code) {
-        Product product = this.getProduct(code);
-        if (product == null) return false;
-        delete(product);
+        Optional<Product> product = this.getProduct(code);
+        if (product.isEmpty()) return false;
+        delete(product.get());
         return true;
     }
 
-    public Price purchasePrice(Set<Integer> setOfCodes) {
+    public Optional<Price> purchasePrice(Set<Integer> setOfCodes) {
         int kop = 0;
         Set<Product> setOfProducts = new HashSet<>();
         for (Integer code : setOfCodes) {
-            Product product = getProduct(code);
-            if (product == null) return null;//Optional
-            setOfProducts.add(product);
+            Optional<Product> product = getProduct(code);
+            if (product.isEmpty()) return Optional.empty();
+            setOfProducts.add(product.get());
         }
         for (Map.Entry<Product, Price> pair: priceList.entrySet()) {
             if (setOfProducts.contains(pair.getKey())) {
@@ -95,7 +95,7 @@ public final class PriceList {
                 kop += pair.getValue().getKop();
             }
         }
-        return new Price(kop);
+        return Optional.of(new Price(kop));
     }
 
     public boolean containsAll(Set<Product> setOfProducts) {

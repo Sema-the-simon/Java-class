@@ -1,7 +1,6 @@
 package javaclass;
 
 import java.util.Objects;
-
 public final class Product {
     private String name;
     private final int code;
@@ -12,7 +11,6 @@ public final class Product {
         this.name = name;
         this.code = code;
     }
-
     public String getName() {
         return name;
     }

@@ -24,7 +24,7 @@ class PriceListTest {
 
     @Test
     void getProduct() {
-        assertEquals(new Product("Сыр", 4), PriceList().getProduct(4));
+        assertEquals(new Product("Сыр", 4), PriceList().getProduct(4).get());
     }
 
     @Test
@@ -56,14 +56,15 @@ class PriceListTest {
         PriceList prl = PriceList();
         Product product = new Product("Яйца куринные", 10);
         prl.nameChange(product, "Chicken eggs");
-        assertEquals("Chicken eggs", prl.getProduct(10).getName());
+        assertEquals("Chicken eggs", prl.getProduct(10).get().getName());
+        assertNull(prl.getProduct(51651).orElse(null));
     }
 
     @Test
     void nameChangeCode() {
         PriceList prl = PriceList();
         prl.nameChange(10, "Chicken eggs");
-        assertEquals("Chicken eggs", prl.getProduct(10).getName());
+        assertEquals("Chicken eggs", prl.getProduct(10).get().getName());
     }
 
 
@@ -119,13 +120,13 @@ class PriceListTest {
         set.add(21);
         set.add(22);
         set.add(23);
-        assertEquals(new Price(7965), prl.purchasePrice(set));
+        assertEquals(new Price(7965), prl.purchasePrice(set).get());
         PriceList res = new PriceList(new HashMap<>());
         res.add(new Product("Яйца куринные", 10), new Price(4937));
         res.add(new Product("Сыр", 4), new Price(18002));
         res.add(new Product("Молоко", 3), new Price(5039));
         res.add(new Product("Порошок", 3228), new Price(8069));
-        assertNull(res.purchasePrice(set));
+        assertNull(res.purchasePrice(set).orElse(null));
     }
 
     @Test
