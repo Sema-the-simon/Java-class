@@ -7,6 +7,8 @@ public final class Product {
     private final int code;
 
     public Product(String name, int code) {
+        if (name == null) throw new IllegalArgumentException("Name con not be null");
+        if (code  <= 0) throw new IllegalArgumentException("Fore code:" + code + ". Code can not be negative");
         this.name = name;
         this.code = code;
     }
@@ -27,7 +29,7 @@ public final class Product {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (obj == null || !(obj instanceof Product)) return false;
+        if (!(obj instanceof Product)) return false;
         Product other = (Product) obj;
         return name != null && name.equals(other.name) && code == other.code;
     }
