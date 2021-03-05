@@ -1,5 +1,9 @@
 package javaclass;
 
+/**
+ * Price - цена.
+ * Хранит рубли и копейки - rub, kop
+ */
 public final class Price {
     private final int rub;
     private final int kop;

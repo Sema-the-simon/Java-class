@@ -1,8 +1,20 @@
 package javaclass;
+
 import java.util.*;
 
 /**
- *
+ * Вариант 11 -- прейскурант [Java].
+ * Хранит списки товаров {@link Product} и их цен {@link Price}, для этого используется {@code HasMap}.
+ * <p>Методы:
+ * <p>Добавление товара и его цены: {@code add};
+ * <p>Изменение цены товара по известному коду или по известному товару: {@code priceChange};
+ * <p>Изменение имени товара по известному коду или по известному товару: {@code nameChange};
+ * <p>Удаление товара по известному коду или по известному товару: {@code delete};
+ * <p>Удаление всех товаров из множества {@code set()}: {@code deleteAll};
+ * <p>Определение цены покупки по коду и количествуэкземпляров: {@code purchasePrice};
+ * <p>Найти продукт по заданному коду: {@code getProduct};
+ * <p>Узнать содержится ли продукт в Прэйскуранте: {@code containsProduct};
+ * <p>Узнать содержатся ли продукты из множества {@code set()} в Прэйскуранте: {@code containsAll};
  */
 public final class PriceList {
     private final Map<Product, Price> priceList = new HashMap<>();
@@ -12,7 +24,6 @@ public final class PriceList {
             priceList.putAll(map);
         }
     }
-
 
     public Map<Product, Price> getPriceList() {
         return new HashMap<>(priceList);
@@ -70,18 +81,18 @@ public final class PriceList {
         return true;
     }
 
+    public boolean delete(int code) {
+        Optional<Product> product = this.getProduct(code);
+        product.ifPresent(this::delete);
+        return product.isPresent();
+    }
+
     public boolean deleteAll(Set<Product> setOfProducts) {
         if (!containsAll(setOfProducts)) return false;
         for (Product product : setOfProducts) {
             this.delete(product);
         }
         return true;
-    }
-
-    public boolean delete(int code) {
-        Optional<Product> product = this.getProduct(code);
-        product.ifPresent(this::delete);
-        return product.isPresent();
     }
 
     public Price purchasePrice(Map<Integer, Integer> mapOfCodes) {

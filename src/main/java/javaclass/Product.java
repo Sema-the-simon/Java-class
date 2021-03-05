@@ -1,16 +1,23 @@
 package javaclass;
 
 import java.util.Objects;
+
+/**
+ * Product - Товар.
+ * Хранит имя товара - name,
+ * и целочисленный код товара - code, код может быть только положительным
+ */
 public final class Product {
     private String name;
     private final int code;
 
     public Product(String name, int code) {
         if (name == null) throw new IllegalArgumentException("Name con not be null");
-        if (code  <= 0) throw new IllegalArgumentException("Fore code:" + code + ". Code can not be negative");
+        if (code <= 0) throw new IllegalArgumentException("Fore code:" + code + ". Code can not be negative");
         this.name = name;
         this.code = code;
     }
+
     public String getName() {
         return name;
     }
@@ -34,7 +41,7 @@ public final class Product {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, code)* 17;
+        return Objects.hash(name, code) * 17;
     }
 
     @Override
