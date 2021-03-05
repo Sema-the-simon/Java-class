@@ -16,7 +16,7 @@ public final class Product {
     }
 
     public int getCode() {
-        return code;
+        return this.code;
     }
 
     public void setName(String name) {

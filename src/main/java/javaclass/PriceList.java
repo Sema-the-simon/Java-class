@@ -1,7 +1,9 @@
 package javaclass;
-
 import java.util.*;
 
+/**
+ *
+ */
 public final class PriceList {
     private final Map<Product, Price> priceList = new HashMap<>();
 
@@ -13,7 +15,7 @@ public final class PriceList {
 
 
     public Map<Product, Price> getPriceList() {
-        return priceList;
+        return new HashMap<>(priceList);
     }
 
     public Optional<Product> getProduct(int code) {
@@ -26,26 +28,29 @@ public final class PriceList {
     }
 
     public Boolean add(Product product, Price price) {
-        if (product == null || price == null) return false;
+        if (isNull(product, price)) return false;
         priceList.put(product, price);
         return true;
     }
 
+    private <T> boolean isNull(Product product, T other) {
+        return product == null || other == null;
+    }
+
     public boolean priceChange(Product product, Price newPrice) {
-        if (product == null || newPrice == null || !priceList.containsKey(product)) return false;
+        if (isNull(product, newPrice) || !priceList.containsKey(product)) return false;
         priceList.replace(product, newPrice);
         return true;
     }
 
     public boolean priceChange(int code, Price newPrice) {
         Optional<Product> product = this.getProduct(code);
-        if (product.isEmpty()) return false;
-        priceChange(product.get(), newPrice);
-        return true;
+        product.ifPresent((thisProduct) -> priceChange(thisProduct, newPrice));
+        return product.isPresent();
     }
 
     public boolean nameChange(Product product, String newName) {
-        if (product == null || newName == null ||!priceList.containsKey(product)) return false;
+        if (isNull(product, newName) || !priceList.containsKey(product)) return false;
         Price price = priceList.get(product);
         product.setName(newName);
         priceList.remove(product);
@@ -55,13 +60,12 @@ public final class PriceList {
 
     public boolean nameChange(int code, String newName) {
         Optional<Product> product = this.getProduct(code);
-        if (product.isEmpty()) return false;
-        nameChange(product.get(), newName);
-        return false;
+        product.ifPresent((thisProduct) -> nameChange(thisProduct, newName));
+        return product.isPresent();
     }
 
     public boolean delete(Product product) {
-        if (product == null ||!priceList.containsKey(product)) return false;
+        if (product == null || !priceList.containsKey(product)) return false;
         priceList.remove(product);
         return true;
     }
@@ -76,31 +80,29 @@ public final class PriceList {
 
     public boolean delete(int code) {
         Optional<Product> product = this.getProduct(code);
-        if (product.isEmpty()) return false;
-        delete(product.get());
-        return true;
+        product.ifPresent(this::delete);
+        return product.isPresent();
     }
 
-    public Optional<Price> purchasePrice(Set<Integer> setOfCodes) {
+    public Price purchasePrice(Map<Integer, Integer> mapOfCodes) {
+        int res = 0;
         int kop = 0;
-        Set<Product> setOfProducts = new HashSet<>();
-        for (Integer code : setOfCodes) {
-            Optional<Product> product = getProduct(code);
-            if (product.isEmpty()) return Optional.empty();
-            setOfProducts.add(product.get());
+        for (Map.Entry<Integer, Integer> pair : mapOfCodes.entrySet()) {
+            Product product = getProduct(pair.getKey()).orElseThrow(() ->
+                    new NoSuchElementException("No such Product with code:" + pair.getKey()));
+            Price price = priceList.get(product);
+            kop += price.getKop();
+            kop += price.getRub() * 100;
+            kop *= pair.getValue();
+            res += kop;
+            kop = 0;
         }
-        for (Map.Entry<Product, Price> pair: priceList.entrySet()) {
-            if (setOfProducts.contains(pair.getKey())) {
-                kop += pair.getValue().getRub() * 100;
-                kop += pair.getValue().getKop();
-            }
-        }
-        return Optional.of(new Price(kop));
+        return new Price(res);
     }
 
     public boolean containsAll(Set<Product> setOfProducts) {
         for (Product product : setOfProducts) {
-        if (!priceList.containsKey(product)) return false;
+            if (!priceList.containsKey(product)) return false;
         }
         return true;
     }
@@ -125,7 +127,7 @@ public final class PriceList {
     @Override
     public String toString() {
         StringBuilder SB = new StringBuilder("PriceList{");
-        for (Map.Entry<Product, Price> pair: priceList.entrySet()) {
+        for (Map.Entry<Product, Price> pair : priceList.entrySet()) {
             SB.append(pair.getKey());
             SB.append(" => ");
             SB.append(pair.getValue());

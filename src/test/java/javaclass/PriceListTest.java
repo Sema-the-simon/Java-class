@@ -2,10 +2,7 @@ package javaclass;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -28,7 +25,7 @@ class PriceListTest {
     }
 
     @Test
-    void addProductAndPrice() {
+    void add() {
         Product product = new Product("Яйца куринные", 10);
         Price price = new Price(6500);
         PriceList example = new PriceList(new HashMap<>());
@@ -116,17 +113,17 @@ class PriceListTest {
     @Test
     void purchasePrice() {
         PriceList prl = PriceList();
-        Set<Integer> set = new HashSet<>();
-        set.add(21);
-        set.add(22);
-        set.add(23);
-        assertEquals(new Price(7965), prl.purchasePrice(set).get());
+        Map<Integer, Integer> map = new HashMap<>();
+        map.put(21 , 3);
+        map.put(22, 1);
+        map.put(23, 15);
+        assertEquals(new Price(61665), prl.purchasePrice(map));
         PriceList res = new PriceList(new HashMap<>());
         res.add(new Product("Яйца куринные", 10), new Price(4937));
         res.add(new Product("Сыр", 4), new Price(18002));
         res.add(new Product("Молоко", 3), new Price(5039));
         res.add(new Product("Порошок", 3228), new Price(8069));
-        assertNull(res.purchasePrice(set).orElse(null));
+        assertThrows(NoSuchElementException.class, () -> res.purchasePrice(map));
     }
 
     @Test
